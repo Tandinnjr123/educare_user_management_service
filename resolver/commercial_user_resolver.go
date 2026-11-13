@@ -216,7 +216,7 @@ func (ar *UserResolver) FetchAllCommercialUsers(p graphql.ResolveParams) *model.
         input.Limit = 50
     }
 
-    result, totalCount, err := ar.Services.FetchAllCommercialUsers(input.Limit, input.Offset)
+    result, totalCount, err := ar.Services.FetchAllCommercialUsers(input.Limit, input.Offset, input.SearchBy, input.Search)
     if err != nil {
         return helpers.FormatError(err)
     }

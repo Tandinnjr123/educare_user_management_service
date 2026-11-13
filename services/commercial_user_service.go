@@ -74,8 +74,12 @@ func (vs *UserService) FetchCommercialUser(userID uuid.UUID) (*model.CommercialU
 	return vs.Repository.FetchCommercialUser(userID)
 }
 
-func (vs *UserService) FetchAllCommercialUsers(limit, offset int) ([]model.CommercialUser, int, error) {
-    return vs.Repository.FetchAllCommercialUsers(limit, offset)
+func (vs *UserService) FetchAllCommercialUsers(limit, offset int, searchBy, search string) ([]model.CommercialUser, int, error) {
+    return vs.Repository.FetchAllCommercialUsers(limit, offset, searchBy, search)
+}
+
+func (vs *UserService) FetchUserActivityReport(filter model.UserActivityFilter) ([]model.UserActivityReportRow, int, error) {
+    return vs.Repository.FetchUserActivityReport(filter)
 }
 
 func (vs *UserService) FetchAllActiveUsers(limit, offset int) ([]model.CommercialUser, int, error) {

@@ -76,9 +76,52 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 						Type: graphql.Int,
 						Description: "The number of users to skip before starting to return results.",
 					},
+					"search_by": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "Field to filter on: name, mobile_no or email. Used together with search.",
+					},
+					"search": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "Value to filter by. Name and email match partially (case-insensitive); mobile_no must match exactly.",
+					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
 					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchAllCommercialUsers))(p), nil
+				},
+			},
+			"fetchCommercialUserActivities": &graphql.Field{
+				Type:        CommercialUserActivitiesResponse,
+				Description: "Commercial users with their current membership, last login and redeemed coupons.",
+				Args: graphql.FieldConfigArgument{
+					"activity": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "all (default), membership, coupon or login: only users who did this, within the date range if given.",
+					},
+					"from_date": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "Start of the activity date range, YYYY-MM-DD (inclusive).",
+					},
+					"to_date": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "End of the activity date range, YYYY-MM-DD (inclusive).",
+					},
+					"package_id": &graphql.ArgumentConfig{
+						Type:        scalar.UUID,
+						Description: "Only users whose current membership is on this package.",
+					},
+					"search_by": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "Field to filter on: name, mobile_no or email. Used together with search.",
+					},
+					"search": &graphql.ArgumentConfig{
+						Type:        graphql.String,
+						Description: "Value to filter by. Name and email match partially (case-insensitive); mobile_no must match exactly.",
+					},
+					"limit":  &graphql.ArgumentConfig{Type: graphql.Int},
+					"offset": &graphql.ArgumentConfig{Type: graphql.Int},
+				},
+				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
+					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchUserActivityReport))(p), nil
 				},
 			},
 			"fetchAllActiveCommercialUsers": &graphql.Field{
