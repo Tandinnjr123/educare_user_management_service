@@ -359,48 +359,50 @@ func (repo *UserRepository) ResetPassword(userID uuid.UUID, newPassword string) 
     return nil
 }
 
+// FetchNewRegister lists users registered on the given days (inclusive, Bhutan time), newest first.
 func (repo *UserRepository) FetchNewRegister(from_date, to_date time.Time) ([]model.CommercialUser, error) {
     var users []model.CommercialUser
-    if err := repo.DB.Where("created_at BETWEEN ? AND ?", from_date, to_date).Find(&users).Error; err != nil {
+    r := newReportRange(&from_date, &to_date)
+    if err := repo.DB.Preload("UserProfile").
+        Where("created_at >= ? AND created_at < ?", r.newFrom, r.to).
+        Order("created_at DESC").
+        Find(&users).Error; err != nil {
         return nil, fmt.Errorf("failed to fetch new registrations: %v", err)
     }
     return users, nil
 }
 
-func (repo *UserRepository) GetCommercialUserTotals(fromDate, toDate *time.Time) (totalAll int, totalActive int, totalInActive,totalNew int, err error) {
-    var totalAllCount int64
-    var totalActiveCount int64
-    var totalInActiveCount int64
-    var totalNewCount int64
-
-    query := repo.DB.Model(&model.CommercialUser{})
-    if fromDate != nil && toDate != nil {
-        query = query.Where("created_at BETWEEN ? AND ?", fromDate, toDate)
+// GetCommercialUserTotals counts commercial users for the report cards. Total is everyone registered
+// by the end of the range; active is those of them who logged in or used the app in the range (any
+// time without a range); inactive is the rest; new is those registered in the range, or in the last
+// 30 days without one. App activity is recorded per month, so it counts for the whole month.
+// Returns total, active, new, inactive.
+func (repo *UserRepository) GetCommercialUserTotals(fromDate, toDate *time.Time) (totalAll int, totalActive int, totalInActive, totalNew int, err error) {
+    r := newReportRange(fromDate, toDate)
+    var counts struct {
+        TotalAll    int
+        TotalActive int
+        TotalNew    int
     }
-    if err := query.Count(&totalAllCount).Error; err != nil {
-        return 0, 0, 0, 0, fmt.Errorf("failed to count total users: %w", err)
+    err = repo.DB.Raw(`
+        SELECT COUNT(*) AS total_all,
+            COUNT(*) FILTER (WHERE
+                EXISTS (SELECT 1 FROM auth.access_tokens t
+                    WHERE t.user_id = u.id AND t.created_at >= @active_from AND t.created_at < @to)
+                OR EXISTS (SELECT 1 FROM auth.user_activities a
+                    WHERE a.user_id = u.id
+                    AND (make_date(a.year, a.month, 1) + interval '1 month') AT TIME ZONE 'Asia/Thimphu' > @active_from
+                    AND make_date(a.year, a.month, 1)::timestamp AT TIME ZONE 'Asia/Thimphu' < @to)
+            ) AS total_active,
+            COUNT(*) FILTER (WHERE u.created_at >= @new_from AND u.created_at < @to) AS total_new
+        FROM auth.users u
+        WHERE u.created_at < @to`,
+        map[string]interface{}{"active_from": r.activeFrom, "new_from": r.newFrom, "to": r.to}).
+        Scan(&counts).Error
+    if err != nil {
+        return 0, 0, 0, 0, fmt.Errorf("failed to count users: %w", err)
     }
-
-    activeQuery := repo.DB.Model(&model.UserActivity{}).
-        Select("user_id").
-        Group("user_id")
-    if fromDate != nil && toDate != nil {
-        activeQuery = activeQuery.Where("created_at BETWEEN ? AND ?", fromDate, toDate)
-    }
-    if err := activeQuery.Count(&totalActiveCount).Error; err != nil {
-        return 0, 0, 0, 0, fmt.Errorf("failed to count active users: %w", err)
-    }
-
-    totalInActiveCount = totalAllCount - totalActiveCount
-    if totalInActiveCount < 0 {
-        totalInActiveCount = 0
-    }
-
-    if err := repo.DB.Model(&model.CommercialUser{}).Where("created_at BETWEEN ? AND ?", fromDate, toDate).Count(&totalNewCount).Error; err != nil {
-        return 0, 0, 0, 0,fmt.Errorf("failed to count new registrations: %w", err)
-    }
-
-    return int(totalAllCount), int(totalActiveCount), int(totalNewCount), int(totalInActiveCount), nil
+    return counts.TotalAll, counts.TotalActive, counts.TotalNew, counts.TotalAll - counts.TotalActive, nil
 }
 
 func (repo *UserRepository) GetUserActivity(offset, limit int) ([]model.UserActivity, error) {
