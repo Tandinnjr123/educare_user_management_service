@@ -24,10 +24,23 @@ type CommercialUser struct {
     UpdatedAt      time.Time `json:"updated_at"`
 
     UserProfile    *UserProfile `gorm:"foreignKey:UserId;references:ID" json:"user_profile"`
+    Membership     *UserMembership `gorm:"-" json:"membership"`
 }
 
 func (CommercialUser) TableName() string {
     return "auth.users"
+}
+
+// UserMembership is the user's latest membership from the subscription schema, with the plan it
+// is on. IsActive is true while the end date is in the future.
+type UserMembership struct {
+    PackageName          *string    `json:"package_name"`
+    DurationType         *string    `json:"duration_type"`
+    NumberOfDays         *int       `json:"number_of_days"`
+    MembershipDurationID uuid.UUID  `json:"membership_duration_id"`
+    MembershipJoinDate   time.Time  `json:"membership_join_date"`
+    MembershipEndDate    time.Time  `json:"membership_end_date"`
+    IsActive             bool       `json:"is_active"`
 }
 
 type UserResult struct {

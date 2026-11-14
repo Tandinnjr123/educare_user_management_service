@@ -19,6 +19,21 @@ var CmsUser = graphql.NewObject(graphql.ObjectConfig{
 		"updated_at":      &graphql.Field{Type: scalar.Time},
 
 		"user_profile":	   &graphql.Field{Type: CmsUserProfile},
+		"membership":      &graphql.Field{Type: CmsUserMembership},
+	},
+})
+
+// CmsUserMembership is the user's latest membership; null when they have never had one.
+var CmsUserMembership = graphql.NewObject(graphql.ObjectConfig{
+	Name: "CmsUserMembership",
+	Fields: graphql.Fields{
+		"package_name":           &graphql.Field{Type: graphql.String},
+		"duration_type":          &graphql.Field{Type: graphql.String},
+		"number_of_days":         &graphql.Field{Type: graphql.Int},
+		"membership_duration_id": &graphql.Field{Type: scalar.UUID},
+		"membership_join_date":   &graphql.Field{Type: scalar.Time},
+		"membership_end_date":    &graphql.Field{Type: scalar.Time},
+		"is_active":              &graphql.Field{Type: graphql.Boolean},
 	},
 })
 

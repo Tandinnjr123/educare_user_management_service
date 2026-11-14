@@ -257,10 +257,40 @@ func (repo *UserRepository) UpdateUserStatus(ctx context.Context, userID uuid.UU
 
 func (repo *UserRepository) FetchCommercialUser(userID uuid.UUID) (*model.CommercialUser, error) {
     var user model.CommercialUser
-    if err := repo.DB.First(&user, "id = ?", userID).Preload("UserProfile").Error; err != nil {
+    if err := repo.DB.Preload("UserProfile").First(&user, "id = ?", userID).Error; err != nil {
         return nil, fmt.Errorf("user not found: %v", err)
     }
+    membership, err := repo.fetchLatestMembership(userID)
+    if err != nil {
+        return nil, err
+    }
+    user.Membership = membership
     return &user, nil
+}
+
+// fetchLatestMembership returns the user's most recently updated membership with its plan, or nil
+// when the user has never had one or the subscription tables are not in this service's database.
+func (repo *UserRepository) fetchLatestMembership(userID uuid.UUID) (*model.UserMembership, error) {
+    if !relationsExist(repo.DB, "subscription.user_memberships", "subscription.membership_durations", "subscription.packages") {
+        return nil, nil
+    }
+    var memberships []model.UserMembership
+    err := repo.DB.Table("subscription.user_memberships um").
+        Joins("LEFT JOIN subscription.membership_durations md ON md.id = um.membership_duration_id").
+        Joins("LEFT JOIN subscription.packages pk ON pk.id = md.package_id").
+        Select(`pk.name AS package_name, md.duration_type, md.number_of_days, um.membership_duration_id,
+            um.membership_join_date, um.membership_end_date, um.membership_end_date > now() AS is_active`).
+        Where("um.user_id = ?", userID).
+        Order("um.updated_at DESC").
+        Limit(1).
+        Scan(&memberships).Error
+    if err != nil {
+        return nil, fmt.Errorf("failed to fetch membership: %v", err)
+    }
+    if len(memberships) == 0 {
+        return nil, nil
+    }
+    return &memberships[0], nil
 }
 
 func (repo *UserRepository) FetchAllActiveUsers(limit, offset int) ([]model.CommercialUser, int, error) {
