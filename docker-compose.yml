@@ -1,0 +1,23 @@
+services:
+  usermanagementservice:
+    image: usermanagementservice:latest
+    container_name: usermanagementservice
+    build:
+      context: .
+      dockerfile: Dockerfile
+      platforms:
+        - linux/amd64
+    ports:
+      - "8093:8093"
+    networks:
+      - educareNetwork
+    healthcheck:
+      test: wget -qO- http://localhost:8093/health || exit 1
+      interval: 30s
+      timeout: 3s
+      retries: 3
+    restart: unless-stopped
+
+networks:
+  educareNetwork:
+    external: true
