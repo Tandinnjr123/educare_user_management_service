@@ -30,7 +30,7 @@ func NewMutationType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("create", resolver.CreateUserProfile))(p), nil
+					return AuthMiddleware(PermissionMiddleware("CREATE_COMMERCIAL_USER", resolver.CreateUserProfile))(p), nil
 				},
 			},
 			"updateCommercialUser": &graphql.Field{
@@ -44,7 +44,7 @@ func NewMutationType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("update", resolver.UpdateCommercialUser))(p), nil
+					return AuthMiddleware(PermissionMiddleware("UPDATE_COMMERCIAL_USER", resolver.UpdateCommercialUser))(p), nil
 				},
 			},
 			"updateCommercialUserStatus" : &graphql.Field{
@@ -58,7 +58,7 @@ func NewMutationType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("update", resolver.UpdateUserStatus))(p), nil
+					return AuthMiddleware(PermissionMiddleware("UPDATE_COMMERCIAL_USER", resolver.UpdateUserStatus))(p), nil
 				},
 			},
 			"resetCommercialPassword": &graphql.Field{
@@ -75,7 +75,7 @@ func NewMutationType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("update", resolver.ResetPassword))(p), nil
+					return AuthMiddleware(PermissionMiddleware("UPDATE_COMMERCIAL_USER", resolver.ResetPassword))(p), nil
 				},
 			},
 		},

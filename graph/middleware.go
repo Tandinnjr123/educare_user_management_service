@@ -3,6 +3,7 @@ package schema
 import (
     "cms_user_management_service/helpers"
     "cms_user_management_service/model"
+    "strings"
     
     "fmt"
     "context"
@@ -66,7 +67,7 @@ func PermissionMiddleware(actionName string, next func(p graphql.ResolveParams) 
         if !hasPermission {
             for _, role := range userData.Roles {
                 for _, permission := range role.Permissions {
-                    if permission.Action.Action == actionName {
+                    if permission.Action != nil && codeAllowed(permission.Action.Action, actionName) {
                         hasPermission = true
                         break 
                     }
@@ -84,4 +85,20 @@ func PermissionMiddleware(actionName string, next func(p graphql.ResolveParams) 
 
         return next(p)
     }
+}
+
+// codeAllowed reports whether a permission's action code is one of the codes in allowed, which
+// lists the codes that grant an action separated by "|" (e.g. "LIST_COUPON|LIST_AGENT").
+// Codes are compared without surrounding spaces or line breaks.
+func codeAllowed(code, allowed string) bool {
+	code = strings.TrimSpace(code)
+	if code == "" {
+		return false
+	}
+	for _, c := range strings.Split(allowed, "|") {
+		if code == c {
+			return true
+		}
+	}
+	return false
 }

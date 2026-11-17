@@ -40,7 +40,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.CheckForExistingUser))(p), nil
+					return AuthMiddleware(PermissionMiddleware("CREATE_COMMERCIAL_USER|UPDATE_COMMERCIAL_USER", resolver.CheckForExistingUser))(p), nil
 				},
 			},
 			"fetchProfileByCommercialUserId": &graphql.Field{
@@ -51,7 +51,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchProfileByUserId))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_USER", resolver.FetchProfileByUserId))(p), nil
 				},
 			},
 			"fetchCommercialUser": &graphql.Field{
@@ -62,7 +62,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchCommercialUser))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_USER", resolver.FetchCommercialUser))(p), nil
 				},
 			},
 			"fetchAllCommercialUsers": &graphql.Field{
@@ -86,7 +86,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchAllCommercialUsers))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_USER", resolver.FetchAllCommercialUsers))(p), nil
 				},
 			},
 			"fetchCommercialUserActivities": &graphql.Field{
@@ -121,7 +121,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					"offset": &graphql.ArgumentConfig{Type: graphql.Int},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchUserActivityReport))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_ACTIVE_USER", resolver.FetchUserActivityReport))(p), nil
 				},
 			},
 			"fetchAllActiveCommercialUsers": &graphql.Field{
@@ -137,7 +137,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchAllActiveUsers))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_ACTIVE_USER", resolver.FetchAllActiveUsers))(p), nil
 				},
 			},
 			"fetchCommercialNewRegister": &graphql.Field{
@@ -151,7 +151,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.FetchNewRegister))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_NEW_REGISTRATION", resolver.FetchNewRegister))(p), nil
 				},
 			},
 			"getCommercialUserTotals": &graphql.Field{
@@ -165,7 +165,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
                     },
                 },
                 Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-                    return AuthMiddleware(PermissionMiddleware("list", resolver.GetCommercialUserTotals))(p), nil
+                    return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_USER", resolver.GetCommercialUserTotals))(p), nil
                 },
             },
 			"getUserActivity": &graphql.Field{
@@ -181,7 +181,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					},
 				},
 				Resolve: func(p graphql.ResolveParams) (interface{}, error) {
-					return AuthMiddleware(PermissionMiddleware("list", resolver.GetUserActivity))(p), nil
+					return AuthMiddleware(PermissionMiddleware("LIST_COMMERCIAL_ACTIVE_USER|LIST_COMMERCIAL_USER", resolver.GetUserActivity))(p), nil
 				},
 			},
 		},
