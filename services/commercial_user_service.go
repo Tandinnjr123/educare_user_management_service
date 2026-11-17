@@ -1,8 +1,8 @@
 package services
 
 import (
-	"user_management_service/repositories"
-	"user_management_service/model"
+	"cms_user_management_service/repositories"
+	"cms_user_management_service/model"
 
 	"fmt"
 	"context"

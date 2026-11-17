@@ -1,7 +1,7 @@
 package helpers
 
 import (
-    "user_management_service/config"
+    "cms_user_management_service/config"
     "context"
     "database/sql"
     "fmt"

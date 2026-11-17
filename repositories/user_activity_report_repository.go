@@ -4,7 +4,7 @@ import (
     "fmt"
     "time"
 
-    "user_management_service/model"
+    "cms_user_management_service/model"
 
     "gorm.io/gorm"
 )

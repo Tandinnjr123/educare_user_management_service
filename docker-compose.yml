@@ -1,7 +1,7 @@
 services:
-  usermanagementservice:
-    image: usermanagementservice:latest
-    container_name: usermanagementservice
+  cms-user-management-service:
+    image: cms-user-management-service:latest
+    container_name: cms-user-management-service
     build:
       context: .
       dockerfile: Dockerfile

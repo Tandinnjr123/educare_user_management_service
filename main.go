@@ -1,13 +1,13 @@
 package main
 
 import (
-	"user_management_service/handlers"
+	"cms_user_management_service/handlers"
 
-	"user_management_service/repositories"
-	"user_management_service/resolver"
-	"user_management_service/services"
-	"user_management_service/graph"
-	"user_management_service/helpers"
+	"cms_user_management_service/repositories"
+	"cms_user_management_service/resolver"
+	"cms_user_management_service/services"
+	"cms_user_management_service/graph"
+	"cms_user_management_service/helpers"
 	"log"
 
 	"github.com/labstack/echo/v4"

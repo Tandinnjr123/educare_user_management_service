@@ -1,10 +1,10 @@
 package schema
 
 import (
-	"user_management_service/helpers"
-	"user_management_service/model"
-	"user_management_service/resolver"
-	"user_management_service/graph/scalar"
+	"cms_user_management_service/helpers"
+	"cms_user_management_service/model"
+	"cms_user_management_service/resolver"
+	"cms_user_management_service/graph/scalar"
 
 	"github.com/graphql-go/graphql"
 )
@@ -22,7 +22,7 @@ func NewQueryType(resolver *resolvers.UserResolver) *graphql.Object {
 					}
 
 					serviceInfo := model.Service{
-						Name:    "usermanagementservice",
+						Name:    "cms-user-management-service",
 						Version: "1.0.0",
 						Schema:  helpers.ConvertSchemaToString(schema),
 					}

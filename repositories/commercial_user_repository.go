@@ -1,8 +1,8 @@
 package repositories
 
 import (
-    "user_management_service/model"
-    "user_management_service/helpers"
+    "cms_user_management_service/model"
+    "cms_user_management_service/helpers"
 
     "fmt"
     "strings"

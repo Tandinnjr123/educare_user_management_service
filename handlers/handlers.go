@@ -1,7 +1,7 @@
 package handlers
 
 import (
-	"user_management_service/graph"
+	"cms_user_management_service/graph"
 	
 	"context"
 	"encoding/json"

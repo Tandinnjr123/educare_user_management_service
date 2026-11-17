@@ -1,7 +1,7 @@
 package services
 
 import (
-	"user_management_service/model"
+	"cms_user_management_service/model"
 
 	"context"
 	"time"

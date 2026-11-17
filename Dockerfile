@@ -9,17 +9,17 @@ RUN go mod download
 
 COPY . .
 
-RUN go build -o usermanagementservice
+RUN go build -o cms-user-management-service
 
 FROM alpine:3.20
 
 WORKDIR /app
 
-COPY --from=builder /app/usermanagementservice .
+COPY --from=builder /app/cms-user-management-service .
 COPY --from=builder /app/.env .
 
 EXPOSE 8093
 
 HEALTHCHECK CMD wget -qO- http://localhost:8093/health || exit 1
 
-CMD ["./usermanagementservice"]
+CMD ["./cms-user-management-service"]
